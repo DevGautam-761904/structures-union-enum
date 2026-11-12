@@ -1,57 +1,85 @@
-// Unions
+// Unions - Memory-Efficient Typed Records and Safe Union Access
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+// Enum to identify the data type
+typedef enum {
+    INT,
+    FLOAT,
+    STRING
+} DataType;
+
+// Union to store different types of data
 typedef union {
     int i;
     float f;
     char str[20];
 } UnionData;
 
+// Structure to store union and its type
 typedef struct {
-    int i;
-    float f;
-    char str[20];
-} StructData;
+    UnionData data;
+    DataType type;
+} TypedRecord;
+
+// Function to display data safely
+void display_record(TypedRecord record) {
+
+    switch (record.type) {
+
+        case INT:
+            printf("Integer Value: %d\n", record.data.i);
+            break;
+
+        case FLOAT:
+            printf("Float Value: %.2f\n", record.data.f);
+            break;
+
+        case STRING:
+            printf("String Value: %s\n", record.data.str);
+            break;
+
+        default:
+            printf("Invalid Data Type!\n");
+    }
+}
 
 int main() {
 
-    UnionData udata;
+    TypedRecord record;
 
-    StructData sdata;
-    // sdata = (StructData) {10, 220.5, "Struct Programming"};
-    sdata.i = 10;
-    strcpy(sdata.str, "Struct Programming");
-    sdata.f = 220.5;
+    // Store integer
+    record.data.i = 10;
+    record.type = INT;
 
-    udata.i = 10;
-    printf("udata.i: %d\n", udata.i);
+    printf("--- Integer Record ---\n");
+    display_record(record);
 
-    strcpy(udata.str, "Union Programming");
-    printf("udata.str: %s\n", udata.str);
+    // Store float
+    record.data.f = 220.5;
+    record.type = FLOAT;
 
-    udata.f = 220.5;
-    printf("udata.f: %.2f\n\n", udata.f);
+    printf("\n--- Float Record ---\n");
+    display_record(record);
 
-    // Now see the values after overwriting
-    printf("After overwriting:\n");
-    printf("udata.i: %d\n", udata.i);
-    printf("udata.str: %s\n", udata.str);
-    printf("udata.f: %.2f\n\n", udata.f);
+    // Store string
+    strcpy(record.data.str, "Union Programming");
+    record.type = STRING;
 
-    // Memory Addresses - Union
-    printf("udata.i: %p\n", &udata.i);
-    printf("udata.str: %p\n", &udata.str);
-    printf("udata.f: %p\n\n", &udata.f);
+    printf("\n--- String Record ---\n");
+    display_record(record);
 
-    // Memory Addresses - Struct
-    printf("sdata.i: %p\n", &sdata.i);
-    printf("sdata.str: %p\n", &sdata.str);
-    printf("sdata.f: %p\n\n", &sdata.f);
+    // Memory information
+    printf("\n--- Memory Information ---\n");
 
-    printf("Size of the Union - %lu\n", sizeof(UnionData));
-    printf("Size of the Structure - %lu\n", sizeof(StructData));
+    printf("Size of UnionData: %zu bytes\n", sizeof(UnionData));
+    printf("Size of TypedRecord: %zu bytes\n", sizeof(TypedRecord));
+
+    printf("\nMemory Addresses:\n");
+    printf("Union: %p\n", (void*)&record.data);
+    printf("Type: %p\n", (void*)&record.type);
 
     return 0;
 }
